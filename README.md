@@ -7,6 +7,7 @@ Currently available functions:
 * drawing lines using Bresenham algorithm
 * drawing squares, rectangles, circles filled circles
 * drawing triangles
+* drawing filled triangles
 * drawing polygons
 * rotating triangles around the axises and around other points
 * rotating polygons around the axises and around other points
