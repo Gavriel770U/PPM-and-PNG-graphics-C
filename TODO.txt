@@ -1,0 +1,14 @@
+  * PNG_PROPERTIES enum - I Do not know if I need this :o
+  * improve the drawFigure function so it will draw figures better !!!
+  * add filling to the figure.
+  * work on copying ppm data into png, and add function that can do this
+  * add comments to all of the functions
+  * replace the old comments with the new way with @ IMPORTANT (maybe...)
+  * replace the magic numbers in the code with constants
+  * huffman tree algorithm function
+  * LZ77 algorithm function
+  * CRC32 algorithm function
+  * Add Generics to the ADT Libraries -
+  * Create MULT, DIV functions on Strings that will mention their values as integers.
+  * Create function to convert String "INTEGER (DECIMAL)" to String "INTEGER (HEXADECIMAL)"
+  * add custom created Vectors and Matrices libraries with functions. -
