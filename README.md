@@ -13,4 +13,5 @@ Currently available functions:
 * rotating polygons around the axises and around other points
 * drawing lines using DDA algorithm
 * horizontal and vertical shifts of figures
-* Barnsley fern algorithm
+* Barnsley fern algorithm + rescaling function
+* recursive cubical fractal tree
