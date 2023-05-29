@@ -31,7 +31,7 @@ TODO:
 #include <string.h>
 #include <time.h>
 
-/* MY LYBRARIES */
+/* MY LIBRARIES */
 /**
 #include "Node.h"
 #include "Queue.h"
@@ -62,6 +62,7 @@ TODO -> COMPILATION STRING: ---
 #define WIDTH 800
 #define HEIGHT 600
 
+/* MIN POINT VALUES */
 #define MIN_POINT_X_VALUE 0
 #define MIN_POINT_Y_VALUE 0
 
@@ -179,7 +180,7 @@ void execute(void); // TODO function that will run the commands to show the png 
 
 int main(int argc, char *argv[])
 {
-  srand(time(NULL)); 
+  srand(time(NULL));
 
   const RGB BLACK = {.red = 0, .green = 0, .blue = 0};
   const RGB MAGENTA = {.red = 255, .green = 0, .blue = 255};
@@ -239,7 +240,13 @@ int main(int argc, char *argv[])
   Point po5 = {.x = 100, .y = 200};
   Point po6 = {.x = 100, .y = 100};
 
+  fractalTreeCube(buffer, BUFFER_SIZE, (Point){.x = WIDTH / GET_HALF, .y = 0}, (Point){.x = WIDTH / GET_HALF, .y = 100}, 100, WHITE);
+
   barnsley_fern(buffer, BUFFER_SIZE, GREEN);
+
+  bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=250, .y = 10}, (Point){.x = 30, .y = 30}, YELLOW);
+
+  bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=300, .y = 10}, (Point){.x = 15, .y = 15}, RED);
 
   // drawLine_BRESENHAM(buffer, BUFFER_SIZE, po1, po2, WHITE);
 
@@ -976,18 +983,17 @@ void drawFilledTriangle(RGB *buffer, size_t buffer_size, Point point1, Point poi
 
 double randomDouble(double minValue, double maxValue)
 {
-  double random = 0.0; 
+  double random = 0.0;
   double range = 0.0;
-  double number = 0.0; 
+  double number = 0.0;
 
   random = (double)(rand()) / RAND_MAX;
   range = (maxValue - minValue) * random;
 
-  number = minValue + range; 
+  number = minValue + range;
 
-  return number; 
+  return number;
 }
-
 
 void barnsley_fern_f1(double *x, double *y)
 {
@@ -1027,43 +1033,111 @@ void barnsley_fern(RGB *buffer, size_t buffer_size, RGB color)
   double x = 0.0;
   double y = 0.0;
   double r = 0.0;
+  RGB nowColor = color; 
 
   srand(time(NULL));
 
-  for(y = 0.0; y<9.9983; y+=0.25)
+  for (y = 0.0; y < 9.9983; y += 0.1)
   {
-    for(x = -2.1820; x<2.6558; x+=0.25)
+    for (x = -2.1820; x < 2.6558; x += 0.1)
     {
       for (i = 0; i <= 200000; i++)
       {
-        r = randomDouble(0.0, 1.0); 
+        r = randomDouble(0.0, 1.0);
         // stem
-        if(r < 0.01)
+        if (r < 0.01)
         {
-          barnsley_fern_f1(&x, &y);  
+          barnsley_fern_f1(&x, &y);
         }
         // smaller leaflets
-        else if(r < 0.86)
+        else if (r < 0.86)
         {
           barnsley_fern_f2(&x, &y);
         }
-        // left-hand leaflet 
-        else if(r < 0.93)
+        // left-hand leaflet
+        else if (r < 0.93)
         {
           barnsley_fern_f3(&x, &y);
         }
-        // right-hand leaflet 
+        // right-hand leaflet
         else
-        {   
+        {
           barnsley_fern_f4(&x, &y);
         }
 
-        TRY 
-        { 
-          point = (Point){200+x*50, 10+y*50};
+        TRY
+        {
+          point = (Point){200 + x * 50, 10 + y * 50};
           putPixel(buffer, buffer_size, point, color);
         }
       }
     }
   }
+}
+
+void bransley_fern_custom_properties(RGB *buffer, size_t buffer_size, Point increments, Point scalings, RGB color)
+{
+  Point point;
+  int i = 0;
+  double x = 0.0;
+  double y = 0.0;
+  double r = 0.0;
+
+  srand(time(NULL));
+
+  for (y = 0.0; y < 9.9983; y += 0.1)
+  {
+    for (x = -2.1820; x < 2.6558; x += 0.1)
+    {
+      for (i = 0; i <= 200000; i++)
+      {
+        r = randomDouble(0.0, 1.0);
+        // stem
+        if (r < 0.01)
+        {
+          barnsley_fern_f1(&x, &y);
+        }
+        // smaller leaflets
+        else if (r < 0.86)
+        {
+          barnsley_fern_f2(&x, &y);
+        }
+        // left-hand leaflet
+        else if (r < 0.93)
+        {
+          barnsley_fern_f3(&x, &y);
+        }
+        // right-hand leaflet
+        else
+        {
+          barnsley_fern_f4(&x, &y);
+        }
+
+        TRY
+        {
+          point = (Point){increments.x + x * scalings.x, increments.y + y * scalings.y};
+          putPixel(buffer, buffer_size, point, color);
+        }
+      }
+    }
+  }
+}
+
+void fractalTreeCube(RGB *buffer, size_t buffer_size, Point branchBottom, Point branchTop, int length, RGB color)
+{
+  length = length * 0.67;
+  if (length <= 0)
+  {
+    return;
+  }
+  drawLine_BRESENHAM(buffer, buffer_size, branchBottom, branchTop, color);
+  branchBottom.x = branchTop.x;
+  branchBottom.y = branchTop.y;
+  branchTop.x += length;
+  branchTop.y += length;
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI/4.0);
+  fractalTreeCube(buffer, buffer_size, branchBottom, branchTop, length, color);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, -PI/2.0);
+  fractalTreeCube(buffer, buffer_size, (Point){.x = WIDTH - branchBottom.x, .y = branchBottom.y}, (Point){.x = WIDTH - branchTop.x, .y = branchTop.y}, length, color);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI/2.0);
 }
