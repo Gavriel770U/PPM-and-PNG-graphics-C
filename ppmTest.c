@@ -115,6 +115,13 @@ typedef struct Point
   int y;
 } Point;
 
+typedef struct VoronoiPoint
+{
+  int x;
+  int y;
+  RGB color;
+} VoronoiPoint;
+
 RGB *createBuffer(size_t buffer_size, RGB initialColor);
 
 void write(const char *FILE, char data[], size_t data_size);
@@ -195,6 +202,8 @@ int main(int argc, char *argv[])
   const RGB NAVY = {.red = 0, .green = 0, .blue = 128};
   const RGB TEAL = {.red = 0, .green = 128, .blue = 128};
 
+  const size_t VORONOI_POINTS_AMOUNT = 10;
+
   RGB *buffer = createBuffer(BUFFER_SIZE, BLACK);
 
   char data[TOTAL_SIZE] = {
@@ -240,13 +249,35 @@ int main(int argc, char *argv[])
   Point po5 = {.x = 100, .y = 200};
   Point po6 = {.x = 100, .y = 100};
 
-  fractalTreeCube(buffer, BUFFER_SIZE, (Point){.x = WIDTH / GET_HALF, .y = 0}, (Point){.x = WIDTH / GET_HALF, .y = 100}, 100, WHITE);
+  // fractalTreeCube(buffer, BUFFER_SIZE, (Point){.x = WIDTH / GET_HALF, .y = 0}, (Point){.x = WIDTH / GET_HALF, .y = 100}, 100, WHITE);
 
-  barnsley_fern(buffer, BUFFER_SIZE, GREEN);
+  // barnsley_fern(buffer, BUFFER_SIZE, GREEN);
 
-  bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=250, .y = 10}, (Point){.x = 30, .y = 30}, YELLOW);
+  // bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=250, .y = 10}, (Point){.x = 30, .y = 30}, YELLOW);
 
-  bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=300, .y = 10}, (Point){.x = 15, .y = 15}, RED);
+  // bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=300, .y = 10}, (Point){.x = 15, .y = 15}, RED);
+
+  // bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x = 350, .y=10}, (Point){.x = 10, .y = 10}, CYAN);
+
+  VoronoiPoint *points = NULL;
+  points = (VoronoiPoint *)malloc(sizeof(VoronoiPoint) * VORONOI_POINTS_AMOUNT);
+  points[0] = (VoronoiPoint){.x = 20, .y = 20, .color = CYAN};
+  points[1] = (VoronoiPoint){.x = 320, .y = 320, .color = YELLOW};
+  points[2] = (VoronoiPoint){.x = 50, .y = 60, .color = RED};
+  points[3] = (VoronoiPoint){.x = 620, .y = 120, .color = GREEN};
+  points[4] = (VoronoiPoint){.x = 78, .y = 56, .color = BLUE};
+  points[5] = (VoronoiPoint){.x = 234, .y = 32, .color = LIME};
+  points[6] = (VoronoiPoint){.x = 99, .y = 101, .color = MAGENTA};
+  points[7] = (VoronoiPoint){.x = 245, .y = 121, .color = TEAL};
+  points[8] = (VoronoiPoint){.x = 591, .y = 561, .color = NAVY};
+  points[9] = (VoronoiPoint){.x = 191, .y = 74, .color = GOLD};
+
+
+
+  voronoiDiagram(buffer, BUFFER_SIZE, points, VORONOI_POINTS_AMOUNT);
+
+  free(points);
+  points = NULL; 
 
   // drawLine_BRESENHAM(buffer, BUFFER_SIZE, po1, po2, WHITE);
 
@@ -1033,7 +1064,7 @@ void barnsley_fern(RGB *buffer, size_t buffer_size, RGB color)
   double x = 0.0;
   double y = 0.0;
   double r = 0.0;
-  RGB nowColor = color; 
+  RGB nowColor = color;
 
   srand(time(NULL));
 
@@ -1135,9 +1166,62 @@ void fractalTreeCube(RGB *buffer, size_t buffer_size, Point branchBottom, Point 
   branchBottom.y = branchTop.y;
   branchTop.x += length;
   branchTop.y += length;
-  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI/4.0);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI / 4.0);
   fractalTreeCube(buffer, buffer_size, branchBottom, branchTop, length, color);
-  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, -PI/2.0);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, -PI / 2.0);
   fractalTreeCube(buffer, buffer_size, (Point){.x = WIDTH - branchBottom.x, .y = branchBottom.y}, (Point){.x = WIDTH - branchTop.x, .y = branchTop.y}, length, color);
-  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI/2.0);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI / 2.0);
+}
+
+int manhattanDistance(VoronoiPoint point1, VoronoiPoint point2)
+{
+  return abs(point1.x - point2.x) + abs(point1.y - point2.y);
+}
+
+VoronoiPoint findClosestVoronoiPoint(VoronoiPoint *points, size_t pointsAmount, VoronoiPoint source)
+{
+  VoronoiPoint minDistancePoint = {0, 0, (RGB){0, 0, 0}};
+  VoronoiPoint point = *points;
+  size_t i = 0;
+
+  minDistancePoint = point;
+
+  for (i = 1; i < pointsAmount; i++)
+  {
+    point = points[i];
+    if (manhattanDistance(point, source) < manhattanDistance(minDistancePoint, source))
+    {
+      minDistancePoint = point;
+    }
+  }
+
+  return minDistancePoint;
+}
+
+void voronoiDiagram(RGB *buffer, size_t buffer_size, VoronoiPoint *points, size_t pointsAmount)
+{
+  VoronoiPoint source = {0, 0, (RGB){0, 0, 0}};
+  VoronoiPoint currentPlot = {0, 0, (RGB){0, 0, 0}};
+  size_t i = 0;
+
+  for (i = 0; i < buffer_size; i++)
+  {
+    if (WIDTH <= source.x + INC)
+    {
+      source.x = 0;
+      source.y++;
+    }
+    else
+    {
+      source.x++;
+    }
+    currentPlot = findClosestVoronoiPoint(points, pointsAmount, source);
+    TRY { putPixel(buffer, buffer_size, (Point){.x = source.x, .y = source.y}, currentPlot.color); }
+  }
+
+  for (i = 0; i < pointsAmount; i++)
+  {
+    currentPlot = points[i];
+    drawFilledCircle(buffer, buffer_size, (Point){.x = currentPlot.x, .y = currentPlot.y}, 5, (RGB){0, 0, 0});
+  }
 }
