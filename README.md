@@ -1,7 +1,7 @@
 # PPM-and-PNG-graphics-C
 PPM and PNG graphics in C created from scratch with no SDL, OpenGL and other graphics libraries, only C standard libraries, and only made by me libraries. 
 
-IMPORTANT NOTE: (0, 0) co-ordinate is the left bottom pixel!
+** IMPORTANT NOTE: (0, 0) co-ordinate is the left bottom pixel!
 
 Currently available functions:
 * drawing lines using Bresenham algorithm
