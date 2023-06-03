@@ -15,5 +15,5 @@ Currently available functions:
 * horizontal and vertical shifts of figures
 * Barnsley fern algorithm + rescaling function
 * recursive cubical fractal tree
-* Manhatten distance function
+* Manhattan distance function
 * Vonoroi diagram
