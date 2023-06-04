@@ -1,5 +1,5 @@
 ///           ~  MINI PPM AND PNG 2D GRAPHICS ENGINE MADE WITH C  ~
-/// Author:    @author Gavriel Linoy | January - May, June... 2023
+/// Author:    @author Gavriel Linoy | January - June 2023
 
 /**
 
@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
   const RGB NAVY = {.red = 0, .green = 0, .blue = 128};
   const RGB TEAL = {.red = 0, .green = 128, .blue = 128};
 
-  const size_t VORONOI_POINTS_AMOUNT = 10;
+  const size_t VORONOI_POINTS_AMOUNT = 12;
 
   RGB *buffer = createBuffer(BUFFER_SIZE, BLACK);
 
@@ -270,8 +270,9 @@ int main(int argc, char *argv[])
   points[6] = (VoronoiPoint){.x = 99, .y = 101, .color = MAGENTA};
   points[7] = (VoronoiPoint){.x = 245, .y = 121, .color = TEAL};
   points[8] = (VoronoiPoint){.x = 591, .y = 561, .color = NAVY};
-  points[9] = (VoronoiPoint){.x = 191, .y = 74, .color = GOLD};
-
+  points[9] = (VoronoiPoint){.x = 191, .y = 74, .color = GOLD}; 
+  points[10] = (VoronoiPoint){.x = 91, .y = 313, .color = WHITE};
+  points[11] = (VoronoiPoint){.x = 309, .y = 45, .color = BLACK};
 
 
   voronoiDiagram(buffer, BUFFER_SIZE, points, VORONOI_POINTS_AMOUNT);
@@ -1225,3 +1226,4 @@ void voronoiDiagram(RGB *buffer, size_t buffer_size, VoronoiPoint *points, size_
     drawFilledCircle(buffer, buffer_size, (Point){.x = currentPlot.x, .y = currentPlot.y}, 5, (RGB){0, 0, 0});
   }
 }
+
