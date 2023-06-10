@@ -59,8 +59,8 @@ TODO -> COMPILATION STRING: ---
 #define WRITE_BINARY "wb"
 
 /* WINDOW PROPERTIES */
-#define WIDTH 800
-#define HEIGHT 600
+#define WIDTH 400
+#define HEIGHT 300
 
 /* MIN POINT VALUES */
 #define MIN_POINT_X_VALUE 0
@@ -85,6 +85,9 @@ TODO -> COMPILATION STRING: ---
 
 #define NO_RADIUS 0
 #define NO_CHANGE 0
+
+char brightness[] = " .-=coaA@#";
+const int brightnessMax = ((sizeof(brightness) / sizeof(brightness[0])) - DEC);
 
 jmp_buf save_buf;
 
@@ -177,13 +180,15 @@ void horizontalFigureShift(size_t amount, int xChange, ...);
 
 void drawLine_BRESENHAM(RGB *buffer, size_t buffer_size, Point point1, Point point2, RGB color);
 
+double randomDouble(double minValue, double maxValue);
+
 void barnsley_fern_f2(double *x, double *y);
 
 void barnsley_fern(RGB *buffer, size_t buffer_size, RGB color);
 
 void delay(void);
 
-void execute(void); // TODO function that will run the commands to show the png file
+void execute(char data[], size_t data_size, size_t start_from, RGB* buffer); // FIXME 
 
 int main(int argc, char *argv[])
 {
@@ -202,14 +207,14 @@ int main(int argc, char *argv[])
   const RGB NAVY = {.red = 0, .green = 0, .blue = 128};
   const RGB TEAL = {.red = 0, .green = 128, .blue = 128};
 
-  const size_t VORONOI_POINTS_AMOUNT = 12;
+  const size_t VORONOI_POINTS_AMOUNT = 10;
 
   RGB *buffer = createBuffer(BUFFER_SIZE, BLACK);
 
   char data[TOTAL_SIZE] = {
       'P', '6', '\n',                                              /* FORMAT */
       '#', 'b', 'y', ' ', 'G', 'a', 'v', 'r', 'i', 'e', 'l', '\n', /* AUTHOR */
-      '8', '0', '0', ' ', '6', '0', '0', '\n',                     /* WIDTH, HEIGHT VALUES */
+      '4', '0', '0', ' ', '3', '0', '0', '\n',                     /* WIDTH, HEIGHT VALUES */
       '2', '5', '5', '\n'                                          /* RGB MAXIMUM VALUE */
   };
 
@@ -228,139 +233,22 @@ int main(int argc, char *argv[])
   Point point2 = {.x = 200, .y = 50};
   Point point3 = {.x = 150, .y = 100};
 
-  // for(x = 0; x<WIDTH; x++)
-  // {
-  //   TRY
-  //   {
-  //     putPixel(buffer, BUFFER_SIZE, (Point){.x = x, .y = 0.0015*x*x}, LIME);
+  // bransley_fern_tree(buffer, BUFFER_SIZE, (Point){.x = WIDTH/GET_HALF, .y = 0}, (Point){.x = WIDTH/GET_HALF, .y = HEIGHT/4}, YELLOW, GREEN, 100);
 
-  //     putPixel(buffer, BUFFER_SIZE, (Point){.x = x, .y = 5.8094750193111255e-05*x*x*x}, YELLOW);
-  //   }
-  //}
-  // drawIsoscelesTriangle(buffer, BUFFER_SIZE, p2, 20, RED);
-  // drawRectangle(buffer, BUFFER_SIZE, p7, 100, 100, MAGENTA);
-  // drawFilledCircle(buffer, BUFFER_SIZE, p7, 35, GOLD);
-  // drawCircle(buffer, BUFFER_SIZE, p3, 55, TEAL);
+  smoothLife(data, TOTAL_SIZE, SETTINGS, buffer, BUFFER_SIZE);
 
-  Point po1 = {.x = 250, .y = 50};
-  Point po2 = {.x = 400, .y = 100};
-  Point po3 = {.x = 400, .y = 200};
-  Point po4 = {.x = 250, .y = 250};
-  Point po5 = {.x = 100, .y = 200};
-  Point po6 = {.x = 100, .y = 100};
-
-  // fractalTreeCube(buffer, BUFFER_SIZE, (Point){.x = WIDTH / GET_HALF, .y = 0}, (Point){.x = WIDTH / GET_HALF, .y = 100}, 100, WHITE);
-
-  // barnsley_fern(buffer, BUFFER_SIZE, GREEN);
-
-  // bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=250, .y = 10}, (Point){.x = 30, .y = 30}, YELLOW);
-
-  // bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x=300, .y = 10}, (Point){.x = 15, .y = 15}, RED);
-
-  // bransley_fern_custom_properties(buffer, BUFFER_SIZE, (Point){.x = 350, .y=10}, (Point){.x = 10, .y = 10}, CYAN);
-
-  VoronoiPoint *points = NULL;
-  points = (VoronoiPoint *)malloc(sizeof(VoronoiPoint) * VORONOI_POINTS_AMOUNT);
-  points[0] = (VoronoiPoint){.x = 20, .y = 20, .color = CYAN};
-  points[1] = (VoronoiPoint){.x = 320, .y = 320, .color = YELLOW};
-  points[2] = (VoronoiPoint){.x = 50, .y = 60, .color = RED};
-  points[3] = (VoronoiPoint){.x = 620, .y = 120, .color = GREEN};
-  points[4] = (VoronoiPoint){.x = 78, .y = 56, .color = BLUE};
-  points[5] = (VoronoiPoint){.x = 234, .y = 32, .color = LIME};
-  points[6] = (VoronoiPoint){.x = 99, .y = 101, .color = MAGENTA};
-  points[7] = (VoronoiPoint){.x = 245, .y = 121, .color = TEAL};
-  points[8] = (VoronoiPoint){.x = 591, .y = 561, .color = NAVY};
-  points[9] = (VoronoiPoint){.x = 191, .y = 74, .color = GOLD}; 
-  points[10] = (VoronoiPoint){.x = 91, .y = 313, .color = WHITE};
-  points[11] = (VoronoiPoint){.x = 309, .y = 45, .color = BLACK};
-
-
-  voronoiDiagram(buffer, BUFFER_SIZE, points, VORONOI_POINTS_AMOUNT);
-
-  free(points);
-  points = NULL; 
-
-  // drawLine_BRESENHAM(buffer, BUFFER_SIZE, po1, po2, WHITE);
-
-  // drawFigure(buffer, BUFFER_SIZE, 6, MAGENTA, po1, po2, po3, po4, po5, po6);
-
-  // rotateFigureAboutItsCenterByAngle(6, 30.0, &po1, &po2, &po3, &po4, &po5, &po6);
-
-  // verticalFigureShift(6, -25, &po1, &po2, &po3, &po4, &po5, &po6);
-  // horizontalFigureShift(6, 75, &po1, &po2, &po3, &po4, &po5, &po6);
-
-  // drawFigure(buffer, BUFFER_SIZE, 6, CYAN, po1, po2, po3, po4, po5, po6);
-
-  // rotateFigureAboutItsCenterByAngle(6, -60.0, &po1, &po2, &po3, &po4, &po5, &po6);
-
-  // verticalFigureShift(6, -25, &po1, &po2, &po3, &po4, &po5, &po6);
-  // horizontalFigureShift(6, 75, &po1, &po2, &po3, &po4, &po5, &po6);
-
-  // drawFigure(buffer, BUFFER_SIZE, 6, RED, po1, po2, po3, po4, po5, po6);
-
-  // DDA_drawTriangle(buffer, BUFFER_SIZE, point1, point2, point3, YELLOW);
-
-  // drawFilledTriangle(buffer, BUFFER_SIZE, point1, point2, point3, GREEN);
-
-  // rotateFigureAboutItsCenterByAngle(3, 30.0, &point1, &point2, &point3);
-
-  // drawFilledTriangle(buffer, BUFFER_SIZE, point1, point2, point3, YELLOW);
-
-  // rotateFigureAboutItsCenterByAngle(3, 30.0, &point1, &point2, &point3);
-
-  // drawFilledTriangle(buffer, BUFFER_SIZE, point1, point2, point3, RED);
-
-  // rotateFigureAboutItsCenterByAngle(3, 30.0, &point1, &point2, &point3);
-
-  // drawFilledTriangle(buffer, BUFFER_SIZE, point1, point2, point3, CYAN);
-
-  // rotateFigureAboutItsCenterByAngle(3, 30.0, &point1, &point2, &point3);
-
-  // drawFilledTriangle(buffer, BUFFER_SIZE, point1, point2, point3, BLUE);
-
-  // rotateFigureAboutItsCenterByAngle(3, 30.0, &point1, &point2, &point3);
-
-  // drawFilledTriangle(buffer, BUFFER_SIZE, point1, point2, point3, MAGENTA);
-
-  // drawFigure(buffer, BUFFER_SIZE, 3, RED, point1, point2, point3);
-
-  // rotatePointAboutOrigin(&point1, 30.0);
-  // rotatePointAboutOrigin(&point2, 30.0);
-  // rotatePointAboutOrigin(&point3, 30.0);
-
-  // rotateTriangleByAngle(&point1, &point2, &point3, 30.0);
-
-  // DDA_drawTriangle(buffer, BUFFER_SIZE, point1, point2, point3, RED);
-
-  // rotateTriangleByAngle(&point1, &point2, &point3, 30.0);
-
-  // DDA_drawTriangle(buffer, BUFFER_SIZE, point1, point2, point3, GREEN);
-
-  // rotateTriangleByAngle(&point1, &point2, &point3, -120.0);
-
-  // DDA_drawTriangle(buffer, BUFFER_SIZE, point1, point2, point3, BLUE);
-
-  // DDA_drawTriangle(buffer, BUFFER_SIZE, p1, p8, p7,  RED);
-
-  // drawLine_BRESENHAM(buffer, BUFFER_SIZE, (Point){.x = 20, .y = 20}, (Point){.x = 90, .y = 20}, GREEN);
-  // drawLine_BRESENHAM(buffer, BUFFER_SIZE, (Point){.x = 20, .y = 50}, (Point){.x = 20, .y = 140}, RED);
-  // drawLine_BRESENHAM(buffer, BUFFER_SIZE, (Point){.x = 50, .y = 40}, (Point){.x = 140, .y = 70}, BLUE);
-  // drawLine_BRESENHAM(buffer, BUFFER_SIZE, (Point){.x = 50, .y = 70}, (Point){.x = 100, .y = 150}, MAGENTA);
-  // drawLine_BRESENHAM(buffer, BUFFER_SIZE, (Point){.x = 120, .y = 90}, (Point){.x = 170, .y = 140}, YELLOW);
-  // drawLine_BRESENHAM(buffer, BUFFER_SIZE, (Point){.x = 170, .y = 90}, (Point){.x = 120, .y = 140}, TEAL);
 
   // ------------------------------------------------------------------------------------------------------------------------------
   // -------------------------          E S S E N T I A L     P A R T S     TO     RUN         ------------------------------------
   // ------------------------------------------------------------------------------------------------------------------------------
 
-  fillDataFromBuffer(data, TOTAL_SIZE, SETTINGS, buffer);
+  //fillDataFromBuffer(data, TOTAL_SIZE, SETTINGS, buffer);
 
-  write("graphics.ppm", data, TOTAL_SIZE);
+  // write("graphics.ppm", data, TOTAL_SIZE);
 
-  system("convert graphics.ppm graphics.png");
+  // system("convert graphics.ppm graphics.png");
 
-  system("graphics.png");
-  system("python C:\\Users\\linov\\OneDrive\\Desktop\\c\\GUI\\Refresher.py");
+  // system("graphics.png");
 
   free(buffer);
 
@@ -368,8 +256,6 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-// TODO
-// FIXME
 void copyPPMDataToPNGData(char data[], const char *pngFileName, const size_t height, const size_t width, const size_t ppmSettingsSize)
 {
   FILE *pngFile = fopen(pngFileName, WRITE_BINARY);
@@ -464,6 +350,17 @@ void fillDataFromBuffer(char data[], size_t data_size, size_t start_from, RGB *b
       currentColor = RED_SEQUENCE_IN_RGB;
     }
   }
+}
+
+void execute(char data[], size_t data_size, size_t start_from, RGB* buffer)
+{
+  fillDataFromBuffer(data, data_size, start_from, buffer);
+
+  write("C:/Users/linov/OneDrive/Desktop/c/GUI/output/graphics.ppm", data, data_size);
+
+  system("convert C:/Users/linov/OneDrive/Desktop/c/GUI/output/graphics.ppm C:/Users/linov/OneDrive/Desktop/c/GUI/output/graphics.png");
+
+  system("C:/Users/linov/OneDrive/Desktop/c/GUI/output/graphics.png");
 }
 
 /*
@@ -1121,7 +1018,7 @@ void bransley_fern_custom_properties(RGB *buffer, size_t buffer_size, Point incr
   {
     for (x = -2.1820; x < 2.6558; x += 0.1)
     {
-      for (i = 0; i <= 200000; i++)
+      for (i = 0; i <= 200; i++)
       {
         r = randomDouble(0.0, 1.0);
         // stem
@@ -1217,7 +1114,10 @@ void voronoiDiagram(RGB *buffer, size_t buffer_size, VoronoiPoint *points, size_
       source.x++;
     }
     currentPlot = findClosestVoronoiPoint(points, pointsAmount, source);
-    TRY { putPixel(buffer, buffer_size, (Point){.x = source.x, .y = source.y}, currentPlot.color); }
+    TRY
+    {
+      putPixel(buffer, buffer_size, (Point){.x = source.x, .y = source.y}, currentPlot.color);
+    }
   }
 
   for (i = 0; i < pointsAmount; i++)
@@ -1227,3 +1127,284 @@ void voronoiDiagram(RGB *buffer, size_t buffer_size, VoronoiPoint *points, size_
   }
 }
 
+void bransley_fern_tree(RGB *buffer, size_t buffer_size, Point branchBottom, Point branchTop, RGB branchColor, RGB leafColor, int length)
+{
+  length = length * 0.67;
+  if (length <= 0)
+  {
+    return;
+  }
+  drawLine_BRESENHAM(buffer, buffer_size, branchBottom, branchTop, branchColor);
+  branchBottom.x = branchTop.x;
+  branchBottom.y = branchTop.y;
+  branchTop.x += length;
+  branchTop.y += length;
+  bransley_fern_custom_properties(buffer, buffer_size, (Point){.x = 5, .y = 5}, (Point){.x = branchBottom.x, .y = branchTop.y}, leafColor);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI / 4.0);
+  bransley_fern_tree(buffer, buffer_size, branchBottom, branchTop, branchColor, leafColor, length);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, -PI / 2.0);
+  bransley_fern_tree(buffer, buffer_size, (Point){.x = WIDTH - branchBottom.x, .y = branchBottom.y}, (Point){.x = WIDTH - branchTop.x, .y = branchTop.y}, branchColor, leafColor, length);
+  rotatePointAboutOtherPointByAngle(&branchBottom, &branchTop, PI / 2.0);
+}
+
+/*
+===========================================================================================================================
+===========================================================================================================================
+==============================        S M O O T H      L I F E      F U N C T I O N S        ==============================
+===========================================================================================================================
+===========================================================================================================================
+*/
+
+int euclideanMod(int a, int b)
+{
+  return (a % b + b) % b;
+}
+
+void clamp(double *value, double lower, double higher)
+{
+  if (*(value) < lower)
+  {
+    *(value) = lower;
+  }
+  else if (*(value) > higher)
+  {
+    *(value) = higher;
+  }
+}
+
+double **createDoubleMatrix(int rows, int cols)
+{
+  double **mat = NULL;
+  int i = 0;
+
+  mat = (double **)malloc(sizeof(double *) * rows);
+  if (NULL == mat)
+  {
+    printf("Memory allocation error!\n");
+    exit(UNSUCCESSFUL_CODE);
+  }
+
+  for (i = 0; i < rows; i++)
+  {
+    mat[i] = (double *)calloc(cols, sizeof(double *));
+    if (NULL == mat[i])
+    {
+      printf("Memory allocation error!\n");
+      exit(UNSUCCESSFUL_CODE);
+    }
+  }
+
+  return mat;
+}
+
+void freeDoubleMatrix(double **matrix, int rows)
+{
+  int i = 0;
+
+  for (i = 0; i < rows; i++)
+  {
+    free(matrix[i]);
+  }
+  free(matrix);
+  matrix = NULL;
+}
+
+void printDoubleMatrix(double **grid, int rows, int cols)
+{
+  int y = 0;
+  int x = 0;
+  char c = ' ';
+
+  for (y = 0; y < rows; y++)
+  {
+    for (x = 0; x < cols; x++)
+    {
+      c = brightness[(int)(grid[y][x] * (brightnessMax))];
+      printf("%c", c);
+    }
+    printf("\n");
+  }
+}
+
+void displayDoubleMatrix(RGB* buffer, size_t buffer_size, double **grid, int rows, int cols)
+{
+  int y = 0;
+  int x = 0;
+  int shade = 0;
+
+  for (y = 0; y < rows; y++)
+  {
+    for (x = 0; x < cols; x++)
+    {
+      shade = (int)(grid[y][x] * (brightnessMax));
+
+      putPixel(buffer, buffer_size, (Point){.x = x, .y = y}, (RGB){.red = 10*shade, .blue = 10*shade, .green = 10*shade}); 
+    }
+  }
+}
+
+void fillDoubleMatrixRandom(double **matrix, int rows, int cols, double minValue, double maxValue)
+{
+  int i = 0;
+  int j = 0;
+
+  for (i = 0; i < rows/3; i++)
+  {
+    for (j = 0; j < cols/3; j++)
+    {
+      matrix[i][j] = randomDouble(minValue, maxValue);
+    }
+  }
+}
+
+double calcInnerCircleSum(double **grid, int x, int y, const int ri)
+{
+  double sum = 0.0;
+  int yi = 0;
+  int xi = 0;
+  int exi = 0;
+  int eyi = 0;
+  int determine = 0;
+  int count = 0;
+
+  for (yi = y - ri + INC; yi < y + ri; yi++)
+  {
+    for (xi = x - ri + INC; xi < x + ri; xi++)
+    {
+      exi = euclideanMod(xi, WIDTH);
+      eyi = euclideanMod(yi, HEIGHT);
+      determine = (x - xi) * (x - xi) + (y - yi) * (y - yi);
+      if (determine <= ri * ri)
+      {
+        sum += grid[eyi][exi];
+        count++;
+      }
+    }
+  }
+
+  return sum / count;
+}
+
+double calcOuterCircleSum(double **grid, int x, int y, const int ra, const int ri)
+{
+  double sum = 0.0;
+  int yi = 0;
+  int xi = 0;
+  int exi = 0;
+  int eyi = 0;
+  int determine = 0;
+  int count = 0;
+
+  for (yi = y - ra + INC; yi < y + ra; yi++)
+  {
+    for (xi = x - ra + INC; xi < x + ra; xi++)
+    {
+      exi = euclideanMod(xi, WIDTH);
+      eyi = euclideanMod(yi, HEIGHT);
+      determine = (x - xi) * (x - xi) + (y - yi) * (y - yi);
+      if ((determine > ri * ri) && (determine <= ra * ra))
+      {
+        sum += grid[eyi][exi];
+        count++;
+      }
+    }
+  }
+
+  return sum / count;
+}
+
+double sigmoid1(double x, double a, double alpha)
+{
+  return 1.0 / (1.0 + exp(-(x - a) * 4.0 / alpha));
+}
+
+double sigmoid2(double x, double a, double b, double alpha)
+{
+  return sigmoid1(x, a, alpha) * (1.0 - sigmoid1(x, b, alpha));
+}
+
+double sigmoidm(double x, double y, double m, double alpha)
+{
+  return x * (1.0 - sigmoid1(m, 0.5, alpha)) + y * sigmoid1(m, 0.5, alpha);
+}
+
+double transition(double n, double m, double b1, double b2, double d1, double d2, double alpha)
+{
+  return sigmoid2(n, sigmoidm(b1, d1, m, alpha), sigmoidm(b2, d2, m, alpha), alpha);
+}
+
+void setNextGen(double **grid, double **nextGen, int rows, int cols, int ri, int ra, double b1, double b2, double d1, double d2, double alpha)
+{
+  int x = 0;
+  int y = 0;
+  double n = 0.0;
+  double m = 0.0;
+
+  for (y = 0; y < rows; ++y)
+  {
+    for (x = 0; x < cols; ++x)
+    {
+      m = calcInnerCircleSum(grid, x, y, ri);
+      n = calcOuterCircleSum(grid, x, y, ra, ri);
+      nextGen[y][x] = 2 * transition(n, m, b1, b2, d1, d2, alpha) - DEC;
+    }
+  }
+}
+
+void smoothLife(char data[], size_t data_size, size_t start_from, RGB* buffer, size_t buffer_size)
+{
+  double **grid = NULL;
+  double **nextGen = NULL;
+  const int ra = 21;
+  const int ri = ra / 3;
+  const double b1 = 0.278;
+  const double b2 = 0.365;
+  const double d1 = 0.267;
+  const double d2 = 0.445;
+  const double dt = 0.1;
+  const double alphan = 0.028;
+  const double alpham = 0.147;
+  double n = 0.0;
+  double m = 0.0;
+  int y = 0, x = 0;
+
+  grid = createDoubleMatrix(HEIGHT, WIDTH);
+  nextGen = createDoubleMatrix(HEIGHT, WIDTH);
+
+  fillDoubleMatrixRandom(grid, HEIGHT, WIDTH, 0.0, 1.0);
+
+  // m = calcInnerCircleSum(grid, 0, 0, ri);
+  // n = calcOuterCircleSum(grid, 0, 0, ra, ri);
+
+  // printf("m = %lf\n", m);
+  // printf("n = %lf\n", n);
+  // printf("s(n, m) = %lf\n", transition(n, m, b1, b2, d1, d2, alphan));
+
+  //printDoubleMatrix(grid, HEIGHT, WIDTH);
+
+  displayDoubleMatrix(buffer, buffer_size, grid, HEIGHT, WIDTH); 
+
+  for (int i = 0; i <= 5000; i++)
+  {
+
+    setNextGen(grid, nextGen, HEIGHT, WIDTH, ri, ra, b1, b2, d1, d2, alphan);
+
+    for (y = 0; y < HEIGHT; y++)
+    {
+      for (x = 0; x < WIDTH; x++)
+      {
+        // printf("%lf  ", nextGen[y][x]);
+        grid[y][x] += dt * nextGen[y][x];
+        clamp(&grid[y][x], 0.0, 1.0);
+      }
+    }
+
+    execute(data, data_size, start_from, buffer); 
+
+    displayDoubleMatrix(buffer, buffer_size, grid, HEIGHT, WIDTH); 
+  }
+
+  // free allocated memory for grid
+  freeDoubleMatrix(grid, HEIGHT);
+  freeDoubleMatrix(nextGen, HEIGHT);
+}
